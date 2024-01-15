@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentador</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+
+<script>
+    function filterClients() {
+        var input, filter, datalist, option;
+        input = document.getElementById("cliente");
+        filter = input.value.toUpperCase();
+        datalist = document.getElementById("clientsList");
+        option = datalist.getElementsByTagName("option");
+
+        for (var i = 0; i < option.length; i++) {
+            if (option[i].value.toUpperCase().indexOf(filter) > -1) {
+                option[i].style.display = "";
+            } else {
+                option[i].style.display = "none";
+            }
+        }
+    }
+</script>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Documentador</h1>
+        <form action="/process_template" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="chamado">Chamado:</label>
+                <input type="text" class="form-control" id="chamado" name="data1" required>
+            </div>
+            <div class="form-group">
+                <label for="cliente">Cliente:</label>
+                <input type="text" class="form-control" id="cliente" name="data2" oninput="filterClients()" list="clientsList" required>
+                <datalist id="clientsList">
+                    {% for client in clients %}
+                    <option value="{{ client.cod_cliente }} - {{ client.cliente }}">
+                    {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="modulo">Módulo:</label>
+                <select class="form-control" id="modulo" name="data3" required>
+                    <option value="Administrador">Administrador</option>
+                    <option value="Gestão Administrativa">Gestão Administrativa</option>
+                    <option value="Arquivos Digitais">Arquivos Digitais</option>
+                    <option value="Atualizador">Atualizador</option>
+                    <option value="Autocenter">Autocenter</option>
+                    <option value="Cereais">Cereais</option>
+                    <option value="Concreteira">Concreteira</option>
+                    <option value="Contabil">Contabil</option>
+                    <option value="crm">crm</option>
+                    <option value="customvans">customvans</option>
+                    <option value="demanda">demanda</option>
+                    <option value="Especifico">Especifico</option>
+                    <option value="Florestas">Florestas</option>
+                    <option value="frotas">frotas</option>
+                    <option value="Gestão pessoal">Gestão pessoal</option>
+                    <option value="Helpdesk">Helpdesk</option>
+                    <option value="Invoice">Invoice</option>
+                    <option value="JuntaComercial">JuntaComercial</option>
+                    <option value="Lavouras">Lavouras</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="emissor MDFE">emissor MDFE</option>
+                    <option value="Transportes">Transportes</option>
+                    <option value="Vendas">Vendas</option>
+                    <option value="Vendas_pdv">Vendas_pdv</option>
+                    <option value="Vendor">Vendor</option>
+                    <option value="auditor">auditor</option>
+                    <option value="servidor de notas">servidor de notas</option>
+                    <option value="Praxis">Praxis</option>
+                    <option value="painel">painel</option>
+                    <option value="wms">wms</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="data">Data:</label>
+                <input type="date" class="form-control" id="data" name="data4" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição:</label>
+                <textarea class="form-control" id="descricao" name="data5" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="prints">Upload de Imagem:</label>
+                <input type="file" class="form-control-file" id="prints" name="data6[]" accept="image/*" multiple
+                    required>
+            </div>
+
+            <button type="submit">Processar Template</button>
+        </form>
+    </div>
+</body>
+
+</html>
