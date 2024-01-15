@@ -1,14 +1,33 @@
-﻿from flask import Flask, render_template, request, send_file
+﻿import os
+import tempfile
+from io import BytesIO
+from flask import Flask, render_template, request, send_file, after_this_request
 from docx import Document
 from docx.shared import Inches
-import os
 import requests
 import json
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
 template_path = r'C:\Users\Computador\Documents\doc\TemplateDocument.docx'
 api_url = os.environ.get('API_URL') or 'http://18.229.136.181/api/getclientes.php'
+
+
+temp_dir = tempfile.mkdtemp()
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(lambda: clean_temp_folder(temp_dir), 'interval', minutes=5)
+scheduler.start()
+
+def clean_temp_folder(temp_folder):
+    for file_name in os.listdir(temp_folder):
+        file_path = os.path.join(temp_folder, file_name)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(f"Error deleting file: {e}")
 
 # Function to fetch data from the API
 def get_data_from_api(api_url):
@@ -51,7 +70,8 @@ def process_template():
     replace_placeholder(doc, '@descricao', request.form['data5'])
 
     # Save the modified document
-    modified_path = 'ModifiedDocument.docx'
+    modified_filename = f'DOCUMENTAÇÃO - {request.form["data2"]}.docx'
+    modified_path = os.path.join(temp_dir, modified_filename)
     doc.save(modified_path)
 
     # Handle multiple image uploads for "Prints" field
@@ -60,6 +80,7 @@ def process_template():
     insert_images_after_placeholder(modified_path, image_paths)
 
     return send_file(modified_path, as_attachment=True)
+    
 
 def replace_placeholder(doc, placeholder, replacement):
     for paragraph in doc.paragraphs:
@@ -76,7 +97,7 @@ def replace_placeholder(doc, placeholder, replacement):
                             run.text = run.text.replace(placeholder, replacement)
 
 def save_image(file):
-    image_folder = 'images'
+    image_folder = os.path.join(temp_dir)
     if not os.path.exists(image_folder):
         os.makedirs(image_folder)
 
