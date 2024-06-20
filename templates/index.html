@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentador</title>
-
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             margin: 0;
             padding: 0;
         }
@@ -18,7 +18,7 @@
             max-width: 600px;
             margin: auto;
             padding: 20px;
-            background-color: #fff;
+            background-color: #000000;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
@@ -31,6 +31,7 @@
 
         label {
             font-weight: bold;
+            color:#fff
         }
 
         .form-group {
@@ -61,9 +62,31 @@
 
         button:hover {
             background-color: #0056b3;
+        }  
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
         }
-    </style>
 
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .form-control-file{
+            background-color: #fff;
+        }
+        .footer {
+        text-align: center;
+        margin-top: 20px;
+        }
+
+        .footer p {
+        font-style: italic;
+        color: #ffffff;
+        }
+
+    </style>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
     function filterClients() {
         var input, filter, datalist, option;
@@ -80,12 +103,59 @@
             }
         }
     }
+    function fetchChamadoData(chamadoValue) {
+        $.ajax({
+            url: '/fetch_chamado_data',
+            method: 'POST',
+            data: { chamado: chamadoValue },
+            success: function(response) {
+                if (response) {
+                    document.getElementById('cliente').value = response.cliente;
+                    document.getElementById('modulo').value = response.modulo;
+                    document.getElementById('data').value = response.data;
+                } else {
+                    alert('Chamado não encontrado, ou esta fechado.');
+                }
+            },
+            error: function() {
+                alert('Error fetching chamado data.');
+            }
+        });
+    }
+    fetch('/static/options.txt')
+                .then(response => response.text())
+                .then(data => {
+                    // Split the data into an array of options
+                    const optionsArray = data.split('\n').map(option => option.trim());
+
+                    // Populate the dropdown with options
+                    const selectElement = document.getElementById('modulo');
+                    optionsArray.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        selectElement.appendChild(optionElement);
+                    });
+                })
+                .catch(error => console.error('Error fetching options:', error));
+
+    document.addEventListener("DOMContentLoaded", function() {
+    // Your code here
+    document.getElementById('chamado').addEventListener('change', function() {
+        var chamadoValue = this.value;
+        fetchChamadoData(chamadoValue);
+    });
+});
+
 </script>
 
 </head>
 
 <body>
     <div class="container">
+        <div class="logo-container">
+            <img src="/static/img/login-logo.png" alt="Logo" width="200">
+        </div>
         <h1>Documentador</h1>
         <form action="/process_template" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -104,38 +174,7 @@
 
             <div class="form-group">
                 <label for="modulo">Módulo:</label>
-                <select class="form-control" id="modulo" name="data3" required>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Gestão Administrativa">Gestão Administrativa</option>
-                    <option value="Arquivos Digitais">Arquivos Digitais</option>
-                    <option value="Atualizador">Atualizador</option>
-                    <option value="Autocenter">Autocenter</option>
-                    <option value="Cereais">Cereais</option>
-                    <option value="Concreteira">Concreteira</option>
-                    <option value="Contabil">Contabil</option>
-                    <option value="crm">CRM</option>
-                    <option value="customvans">Customvans</option>
-                    <option value="demanda">Demanda</option>
-                    <option value="Especifico">Especifico</option>
-                    <option value="Florestas">Florestas</option>
-                    <option value="frotas">Frotas</option>
-                    <option value="Gestão pessoal">Gestão Pessoal</option>
-                    <option value="Helpdesk">HelpDesk</option>
-                    <option value="Invoice">Invoice</option>
-                    <option value="JuntaComercial">JuntaComercial</option>
-                    <option value="Lavouras">Lavouras</option>
-                    <option value="Manutenção">Manutenção</option>
-                    <option value="emissor MDFE">emissor MDFE</option>
-                    <option value="Transportes">Transportes</option>
-                    <option value="Vendas">Vendas</option>
-                    <option value="Vendas_pdv">Vendas_pdv</option>
-                    <option value="Vendor">Vendor</option>
-                    <option value="auditor">Auditor</option>
-                    <option value="servidor de notas">Servidor de Notas</option>
-                    <option value="Praxis">Praxis</option>
-                    <option value="painel">painel</option>
-                    <option value="wms">WMS</option>
-                </select>
+                <select class="form-control" id="modulo" name="data3" required></select>
             </div>
 
             <div class="form-group">
@@ -149,13 +188,17 @@
             </div>
 
             <div class="form-group">
-                <label for="prints">Upload de Imagem:</label>
+                <label for="prints">Print dos Erros:</label>
                 <input type="file" class="form-control-file" id="prints" name="data6[]" accept="image/*" multiple
                     required>
             </div>
 
-            <button type="submit">Processar Template</button>
+            <button type="submit">Gerar Documentação</button>
         </form>
+    </div>
+    <div class="footer">
+        <p>made by EchsDee_</p>
+        <p>dados by Neri</p>
     </div>
 </body>
 
