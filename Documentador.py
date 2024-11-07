@@ -7,6 +7,7 @@ from docx.shared import Inches
 import requests
 import json
 from apscheduler.schedulers.background import BackgroundScheduler
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__, static_folder='static')
 
@@ -33,8 +34,6 @@ def get_data_from_api(api_url):
     try:
         response = requests.get(api_url)
         response.raise_for_status()  # Raise HTTPError for bad responses
-
-        # Remove UTF-8 BOM manually
         content = response.content.decode('utf-8')
         if content.startswith('\ufeff'):
             content = content[1:]
@@ -66,15 +65,19 @@ def front():
 def process_template():
     doc = Document(template_path)
 
+    # Debugging: Print the form data
+    print("Form data received:", request.form)
+
     # Replace placeholders with data from the form
-    replace_placeholder(doc, '@chamado', request.form['data1'])
-    replace_placeholder(doc, '@cliente', request.form['data2'])
-    replace_placeholder(doc, '@modulo', request.form['data3'])
-    replace_placeholder(doc, '@data', request.form['data4'])
-    replace_placeholder(doc, '@descricao', request.form['data5'])
+    replace_placeholder(doc, '@chamado', request.form.get('data1', ''))
+    replace_placeholder(doc, '@cliente', request.form.get('data2', ''))
+    replace_placeholder(doc, '@modulo', request.form.get('data3', ''))
+    replace_placeholder(doc, '@data', request.form.get('data4', ''))
+    replace_placeholder(doc, '@descricao', request.form.get('data5', ''))
+    replace_placeholder(doc, '@usuario', request.form.get('usuario', ''))
 
     # Save the modified document
-    modified_filename = f'DOCUMENTAÇÃO - {request.form["data2"]}.docx'
+    modified_filename = f'DOCUMENTAÇÃO - {secure_filename(request.form.get("data2", "document"))}.docx'
     modified_path = os.path.join(temp_dir, modified_filename)
     doc.save(modified_path)
 

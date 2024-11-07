@@ -67,7 +67,7 @@
         </form>
     </div>
 
-    <button id="showUserForm" class="btn btn-primary corner-button">Acesso</button>
+    <button id="showFormsButton" class="corner-button">Usuario: <span id="usuarioDisplay"></span> | Equipe: <span id="supportLevelDisplay"></span></button>
 
     <div class="pop-in-form" id="userForm">
         <h2 style="color: #0a2751;">Acesso</h2>
@@ -83,29 +83,11 @@
                     <option value="2">Suporte 2º Nivel</option>
                 </select>
             </div>
-            <button type="button" class="btn btn-primary" id="hideUserForm">Hide</button>
+            <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </div>
 
     <script>
-        document.getElementById('showUserForm').addEventListener('click', function() {
-            document.getElementById('userForm').style.display = 'block';
-        });
-
-        document.getElementById('hideUserForm').addEventListener('click', function() {
-            document.getElementById('userForm').style.display = 'none';
-        });
-
-        document.getElementById('userForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const usuario = document.getElementById('usuario').value;
-            const supportLevel = document.getElementById('supportLevel').value;
-            document.getElementById('uploadForm').style.display = 'block';
-            document.getElementById('userForm').style.display = 'none';
-            document.getElementById('uploadForm').usuario.value = usuario;
-            document.getElementById('uploadForm').supportLevel.value = supportLevel;
-        });
-
         // Function to get query parameters
         function getQueryParams() {
             const params = {};
@@ -121,11 +103,31 @@
         // Pre-fill form fields with query parameters
         const params = getQueryParams();
         if (params.usuario) {
+            document.getElementById('hiddenUsuario').value = params.usuario;
             document.getElementById('usuario').value = params.usuario;
+            document.getElementById('usuarioDisplay').textContent = params.usuario;
         }
         if (params.supportLevel) {
+            document.getElementById('hiddenSupportLevel').value = params.supportLevel;
             document.getElementById('supportLevel').value = params.supportLevel;
+            document.getElementById('supportLevelDisplay').textContent = params.supportLevel;
         }
+
+        document.getElementById('showFormsButton').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'block';
+            document.getElementById('uploadForm').style.display = 'block';
+            document.getElementById('showFormsButton').style.display = 'none';
+        });
+
+        document.getElementById('userFormInner').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const supportLevel = document.getElementById('supportLevel').value;
+            document.getElementById('hiddenUsuario').value = usuario;
+            document.getElementById('hiddenSupportLevel').value = supportLevel;
+            document.getElementById('uploadForm').style.display = 'block';
+            document.getElementById('userForm').style.display = 'none';
+        });
 
         const imageInput = document.getElementById('data6');
         const imageDescriptionsContainer = document.getElementById('image-descriptions');
