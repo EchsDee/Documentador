@@ -62,6 +62,36 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        #image-uploads {
+            margin-bottom: 15px;
+        }
+
+        .image-upload {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .image-upload input[type="file"],
+        .image-upload input[type="text"] {
+            margin-right: 10px;
+        }
+        .image-upload {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.image-upload input[type="file"],
+.image-upload input[type="text"] {
+    margin-right: 10px;
+}
+
+.remove-image {
+    margin-left: 10px;
+}
+
     </style>
 
 <script>
@@ -80,7 +110,51 @@
             }
         }
     }
+
+    function addImageInput() {
+        const container = document.getElementById('image-uploads');
+        
+        const newImageUpload = document.createElement('div');
+        newImageUpload.className = 'image-upload';
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.name = 'data6[]';
+        fileInput.accept = 'image/*';
+        fileInput.required = true;
+
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.name = 'data7[]';
+        descInput.placeholder = 'Descrição da imagem';
+        descInput.required = true;
+
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remover';
+        removeButton.className = 'remove-image btn btn-danger btn-sm';
+
+        newImageUpload.appendChild(fileInput);
+        newImageUpload.appendChild(descInput);
+        newImageUpload.appendChild(removeButton);
+
+        container.appendChild(newImageUpload);
+
+        // Add event listener to the remove button
+        removeButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            newImageUpload.remove();
+        });
+    }
+
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.remove-image').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.parentNode.remove();
+        });
+    });
 </script>
+
 
 </head>
 
@@ -149,10 +223,17 @@
             </div>
 
             <div class="form-group">
-                <label for="prints">Upload de Imagem:</label>
-                <input type="file" class="form-control-file" id="prints" name="data6[]" accept="image/*" multiple
-                    required>
+                <label for="images">Upload de Imagens:</label>
+                <div id="image-uploads">
+                    <div class="image-upload">
+                        <input type="file" class="form-control-file" name="data6[]" accept="image/*" required>
+                        <input type="text" class="form-control" name="data7[]" placeholder="Descrição da imagem" required>
+                        <button type="button" class="remove-image btn btn-danger btn-sm">Remover</button>
+                    </div>
+                </div>
+                <button type="button" onclick="addImageInput()">Adicionar mais imagens</button>
             </div>
+            
 
             <button type="submit">Processar Template</button>
         </form>

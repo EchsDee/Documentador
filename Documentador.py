@@ -10,9 +10,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
-template_path = r'C:\Users\Computador\Documents\doc\TemplateDocument.docx'
-api_url = os.environ.get('API_URL') or 'http://18.229.136.181/api/getclientes.php'
-
+template_path = os.path.join(os.getcwd(),'doc', 'TemplateDocument.docx')
+api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
 
 temp_dir = tempfile.mkdtemp()
 
@@ -74,13 +73,13 @@ def process_template():
     modified_path = os.path.join(temp_dir, modified_filename)
     doc.save(modified_path)
 
-    # Handle multiple image uploads for "Prints" field
-    files = request.files.getlist('data6[]')
-    image_paths = [save_image(file) for file in files]
-    insert_images_after_placeholder(modified_path, image_paths)
+    # Handle multiple image uploads with descriptions
+    image_files = request.files.getlist('data6[]')
+    image_descriptions = request.form.getlist('data7[]')
+
+    insert_all_images_with_description(modified_path, image_files, image_descriptions)
 
     return send_file(modified_path, as_attachment=True)
-    
 
 def replace_placeholder(doc, placeholder, replacement):
     for paragraph in doc.paragraphs:
@@ -105,22 +104,28 @@ def save_image(file):
     file.save(image_path)
     return image_path
 
-def insert_images_after_placeholder(doc_path, image_paths, placeholder='@prints'):
+def insert_all_images_with_description(doc_path, image_files, image_descriptions):
     doc = Document(doc_path)
-
+    
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    if placeholder in paragraph.text:
+                    if '@prints' in paragraph.text:
                         # Clear the existing paragraph with the @prints placeholder
                         paragraph.clear()
 
-                        # Insert new paragraphs with images after the cleared one
-                        for image_path in image_paths:
+                        # Insert new paragraphs with images and descriptions after the cleared one
+                        for image_file, description in zip(image_files, image_descriptions):
+                            image_path = save_image(image_file)
+                            
                             p = cell.add_paragraph()
                             run = p.add_run()
                             run.add_picture(image_path, width=Inches(1.0))
+                            
+                            p = cell.add_paragraph(description)
+                        
+                        break
 
     # Save the modified document
     doc.save(doc_path)
