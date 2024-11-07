@@ -8,7 +8,7 @@ import requests
 import json
 from apscheduler.schedulers.background import BackgroundScheduler
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 template_path = os.path.join(os.getcwd(),'doc', 'TemplateDocument.docx')
 api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
@@ -136,4 +136,4 @@ def insert_all_images_with_description(doc_path, image_files, image_descriptions
     doc.save(doc_path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='localhost', port=8000, debug=True)

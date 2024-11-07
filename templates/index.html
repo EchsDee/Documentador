@@ -4,166 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentador</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 50px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #007bff;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            color: #fff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-        }
-
-        .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-success {
-            background-color: #28a745;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        .remove-pair:hover {
-            background-color: #c82333;
-        }
-
-        .pop-in-form {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: none;
-        }
-
-        .pop-in-form h2 {
-            text-align: center;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-
-        .corner-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1001;
-        }
-
-        .image-description img {
-            max-width: 100px;
-            max-height: 100px;
-            display: block;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Documentador</h1>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo" width="200px" height="100px">
+        <h1><strong>Documentador</strong></h1>
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="data1">Chamado:</label>
-                <input type="text" class="form-control" id="data1" name="data1" required>
+            <!-- Main Fields Container -->
+            <div class="main-fields">
+                <div class="form-group">
+                    <label for="data1">Chamado:</label>
+                    <input type="text" class="form-control" id="data1" name="data1" required>
+                </div>
+                <div class="form-group">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" class="form-control" id="cliente" name="data2" oninput="filterClients()" list="clientsList" required>
+                    <datalist id="clientsList">
+                        {% for client in clients %}
+                        <option value="{{ client.cod_cliente }} - {{ client.cliente }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label for="modulo">Módulo:</label>
+                    <select class="form-control" id="modulo" name="data3" required>
+                        <option value="Administrador">Administrador</option>
+                        <option value="Gestão Administrativa">Gestão Administrativa</option>
+                        <option value="Arquivos Digitais">Arquivos Digitais</option>
+                        <option value="Atualizador">Atualizador</option>
+                        <option value="Autocenter">Autocenter</option>
+                        <!-- Add other options as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data4">Data:</label>
+                    <input type="date" class="form-control" id="data4" name="data4" required>
+                </div>
+                <div class="form-group">
+                    <label for="data5">Descrição:</label>
+                    <textarea class="form-control" id="data5" name="data5" rows="3" required></textarea>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="cliente">Cliente:</label>
-                <input type="text" class="form-control" id="cliente" name="data2" oninput="filterClients()" list="clientsList" required>
-                <datalist id="clientsList">
-                    {% for client in clients %}
-                    <option value="{{ client.cod_cliente }} - {{ client.cliente }}">
-                    {% endfor %}
-                </datalist>
+
+            <!-- Images Container -->
+            <div class="images-container mt-4">
+                <div class="form-group">
+                    <label for="data6">Imagens:</label>
+                    <input type="file" class="form-control" id="data6" name="data6[]" accept=".png, .jpg, .jpeg" multiple>
+                    <div id="image-descriptions" class="form-group">
+                        <!-- Image descriptions will be added here -->
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="modulo">Módulo:</label>
-                <select class="form-control" id="modulo" name="data3" required>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Gestão Administrativa">Gestão Administrativa</option>
-                    <option value="Arquivos Digitais">Arquivos Digitais</option>
-                    <option value="Atualizador">Atualizador</option>
-                    <option value="Autocenter">Autocenter</option>
-                    <!-- Add other options as needed -->
-                </select>
+
+            <!-- Enviar button inside the form -->
+            <div class="text-end mt-3">
+                <button type="submit" class="btn btn-success">Enviar</button>
             </div>
-            <div class="form-group">
-                <label for="data4">Data:</label>
-                <input type="date" class="form-control" id="data4" name="data4" required>
-            </div>
-            <div class="form-group">
-                <label for="data5">Descrição:</label>
-                <textarea class="form-control" id="data5" name="data5" rows="3" required></textarea>
-            </div>
-            <div class="form-group">
-                <label for="data6">Imagens:</label>
-                <input type="file" class="form-control" id="data6" name="data6[]" accept=".png, .jpg, .jpeg" multiple>
-            </div>
-            <div id="image-descriptions" class="form-group">
-                <!-- Description fields will be added here -->
-            </div>
-            <button type="submit" class="btn btn-success">Enviar</button>
         </form>
     </div>
 
     <button id="showUserForm" class="btn btn-primary corner-button">Acesso</button>
 
     <div class="pop-in-form" id="userForm">
-        <h2>Acesso</h2>
+        <h2 style="color: #0a2751;">Acesso</h2>
         <form>
             <div class="form-group">
                 <label for="usuario">Usuario:</label>
@@ -230,7 +137,8 @@
             const files = Array.from(this.files);
             files.forEach((file, index) => {
                 const descDiv = document.createElement('div');
-                descDiv.className = 'image-description';
+                descDiv.className = 'image-description d-flex flex-column';
+                descDiv.style.position = 'relative';
 
                 // Create the image preview
                 const img = document.createElement('img');
@@ -240,17 +148,26 @@
                 }
                 reader.readAsDataURL(file);
 
-                // Create the description input
-                const descInput = document.createElement('input');
-                descInput.type = 'text';
+                // Create the description textarea
+                const descInput = document.createElement('textarea');
+                descInput.className = 'descricao form-control';
                 descInput.name = 'data7[]';
                 descInput.placeholder = 'Descrição da imagem';
+                descInput.rows = 1;
+
+                // Add auto-resize for description textarea
+                descInput.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = this.scrollHeight + 'px';
+                    removeBtn.style.height = this.style.height; // Match the height of the remove button
+                });
 
                 // Create the remove button
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'remove-pair';
                 removeBtn.textContent = 'Remover';
+                removeBtn.style.height = descInput.style.height; // Match the initial height of the remove button
                 removeBtn.addEventListener('click', function() {
                     // Remove the file from the file input
                     const dt = new DataTransfer();
@@ -265,13 +182,27 @@
 
                 // Append elements to the description div
                 descDiv.appendChild(img);
-                descDiv.appendChild(descInput);
-                descDiv.appendChild(removeBtn);
+
+                // Add a new div for description and remove button below the image
+                const descButtonDiv = document.createElement('div');
+                descButtonDiv.className = 'd-flex align-items-start mt-2';
+                descButtonDiv.appendChild(descInput);
+                descButtonDiv.appendChild(removeBtn);
+                descDiv.appendChild(descButtonDiv);
 
                 // Append the description div to the container
                 imageDescriptionsContainer.appendChild(descDiv);
             });
         });
+
+        // Auto-resize for Descrição textarea
+        const descriptionField = document.getElementById('data5');
+        descriptionField.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
