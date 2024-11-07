@@ -117,6 +117,8 @@
     <div class="container">
         <h1>Documentador</h1>
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="hiddenUsuario" name="usuario">
+            <input type="hidden" id="hiddenSupportLevel" name="supportLevel">
             <div class="form-group">
                 <label for="data1">Chamado:</label>
                 <input type="text" class="form-control" id="data1" name="data1" required>
@@ -132,13 +134,36 @@
             </div>
             <div class="form-group">
                 <label for="modulo">Módulo:</label>
-                <select class="form-control" id="modulo" name="data3" required>
-                    <option value="Administrador">Administrador</option>
-                    <option value="Gestão Administrativa">Gestão Administrativa</option>
-                    <option value="Arquivos Digitais">Arquivos Digitais</option>
-                    <option value="Atualizador">Atualizador</option>
-                    <option value="Autocenter">Autocenter</option>
-                    <!-- Add other options as needed -->
+                <option value="Administrador">Administrador</option>
+                <option value="Gestão Administrativa">Gestão Administrativa</option>
+                <option value="Arquivos Digitais">Arquivos Digitais</option>
+                <option value="Atualizador">Atualizador</option>
+                <option value="Autocenter">Autocenter</option>
+                <option value="Cereais">Cereais</option>
+                <option value="Concreteira">Concreteira</option>
+                <option value="Contabil">Contabil</option>
+                <option value="crm">CRM</option>
+                <option value="customvans">Customvans</option>
+                <option value="demanda">Demanda</option>
+                <option value="Especifico">Especifico</option>
+                <option value="Florestas">Florestas</option>
+                <option value="frotas">Frotas</option>
+                <option value="Gestão pessoal">Gestão Pessoal</option>
+                <option value="Helpdesk">HelpDesk</option>
+                <option value="Invoice">Invoice</option>
+                <option value="JuntaComercial">JuntaComercial</option>
+                <option value="Lavouras">Lavouras</option>
+                <option value="Manutenção">Manutenção</option>
+                <option value="emissor MDFE">emissor MDFE</option>
+                <option value="Transportes">Transportes</option>
+                <option value="Vendas">Vendas</option>
+                <option value="Vendas_pdv">Vendas_pdv</option>
+                <option value="Vendor">Vendor</option>
+                <option value="auditor">Auditor</option>
+                <option value="servidor de notas">Servidor de Notas</option>
+                <option value="Praxis">Praxis</option>
+                <option value="painel">painel</option>
+                <option value="wms">WMS</option>
                 </select>
             </div>
             <div class="form-group">
@@ -164,7 +189,7 @@
 
     <div class="pop-in-form" id="userForm">
         <h2>Acesso</h2>
-        <form>
+        <form id="userFormInner">
             <div class="form-group">
                 <label for="usuario">Usuario:</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
@@ -176,6 +201,7 @@
                     <option value="2">Suporte 2º Nivel</option>
                 </select>
             </div>
+            <button type="submit" class="btn btn-primary">Continuar</button>
             <button type="button" class="btn btn-primary" id="hideUserForm">Hide</button>
         </form>
     </div>
@@ -189,14 +215,14 @@
             document.getElementById('userForm').style.display = 'none';
         });
 
-        document.getElementById('userForm').addEventListener('submit', function(event) {
+        document.getElementById('userFormInner').addEventListener('submit', function(event) {
             event.preventDefault();
             const usuario = document.getElementById('usuario').value;
             const supportLevel = document.getElementById('supportLevel').value;
+            document.getElementById('hiddenUsuario').value = usuario;
+            document.getElementById('hiddenSupportLevel').value = supportLevel;
             document.getElementById('uploadForm').style.display = 'block';
             document.getElementById('userForm').style.display = 'none';
-            document.getElementById('uploadForm').usuario.value = usuario;
-            document.getElementById('uploadForm').supportLevel.value = supportLevel;
         });
 
         // Function to get query parameters
