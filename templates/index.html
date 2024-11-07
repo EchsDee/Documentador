@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentador</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,100 +27,89 @@
             color: #007bff;
         }
 
+        .form-group {
+            margin-bottom: 15px;
+        }
+
         label {
             font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        input,
-        select,
-        textarea {
+        .form-control {
             width: 100%;
             padding: 10px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ced4da;
             border-radius: 4px;
             box-sizing: border-box;
         }
 
-        button {
-            background-color: #007bff;
-            color: #fff;
+        .btn {
+            display: inline-block;
             padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            background-color: #007bff;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
+            text-decoration: none;
         }
 
-        button:hover {
+        .btn-primary {
+            background-color: #007bff;
+        }
+
+        .btn-primary:hover {
             background-color: #0056b3;
         }
 
-        .input-group {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
+        .btn-success {
+            background-color: #28a745;
         }
 
-        .input-group input[type="file"] {
-            flex: 2;
-        }
-
-        .input-group input[type="text"] {
-            flex: 3;
-            margin-left: 10px;
-        }
-
-        .input-group button {
-            flex: 1;
-            margin-left: 10px;
-            background-color: #dc3545;
-        }
-
-        .input-group button:hover {
-            background-color: #c82333;
-        }
-
-        .image-description {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .image-description img {
-            width: 100px;
-            height: auto;
-            margin-right: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .image-description input {
-            flex: 3;
-            margin-right: 10px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .remove-pair {
-            flex: 1;
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
+        .btn-success:hover {
+            background-color: #218838;
         }
 
         .remove-pair:hover {
             background-color: #c82333;
+        }
+
+        .pop-in-form {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+        }
+
+        .pop-in-form h2 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .corner-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .image-description img {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -150,31 +138,7 @@
                     <option value="Arquivos Digitais">Arquivos Digitais</option>
                     <option value="Atualizador">Atualizador</option>
                     <option value="Autocenter">Autocenter</option>
-                    <option value="Cereais">Cereais</option>
-                    <option value="Concreteira">Concreteira</option>
-                    <option value="Contabil">Contabil</option>
-                    <option value="crm">CRM</option>
-                    <option value="customvans">Customvans</option>
-                    <option value="demanda">Demanda</option>
-                    <option value="Especifico">Especifico</option>
-                    <option value="Florestas">Florestas</option>
-                    <option value="frotas">Frotas</option>
-                    <option value="Gestão pessoal">Gestão Pessoal</option>
-                    <option value="Helpdesk">HelpDesk</option>
-                    <option value="Invoice">Invoice</option>
-                    <option value="JuntaComercial">JuntaComercial</option>
-                    <option value="Lavouras">Lavouras</option>
-                    <option value="Manutenção">Manutenção</option>
-                    <option value="emissor MDFE">emissor MDFE</option>
-                    <option value="Transportes">Transportes</option>
-                    <option value="Vendas">Vendas</option>
-                    <option value="Vendas_pdv">Vendas_pdv</option>
-                    <option value="Vendor">Vendor</option>
-                    <option value="auditor">Auditor</option>
-                    <option value="servidor de notas">Servidor de Notas</option>
-                    <option value="Praxis">Praxis</option>
-                    <option value="painel">painel</option>
-                    <option value="wms">WMS</option>
+                    <!-- Add other options as needed -->
                 </select>
             </div>
             <div class="form-group">
@@ -187,7 +151,7 @@
             </div>
             <div class="form-group">
                 <label for="data6">Imagens:</label>
-                <input type="file" class="form-control" id="data6" name="data6[]" accept="image/*" multiple>
+                <input type="file" class="form-control" id="data6" name="data6[]" accept=".png, .jpg, .jpeg" multiple>
             </div>
             <div id="image-descriptions" class="form-group">
                 <!-- Description fields will be added here -->
@@ -196,7 +160,66 @@
         </form>
     </div>
 
+    <button id="showUserForm" class="btn btn-primary corner-button">Acesso</button>
+
+    <div class="pop-in-form" id="userForm">
+        <h2>Acesso</h2>
+        <form>
+            <div class="form-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="supportLevel">Nível de Suporte:</label>
+                <select class="form-control" id="supportLevel" name="supportLevel" required>
+                    <option value="1">Suporte</option>
+                    <option value="2">Suporte 2º Nivel</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" id="hideUserForm">Hide</button>
+        </form>
+    </div>
+
     <script>
+        document.getElementById('showUserForm').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'block';
+        });
+
+        document.getElementById('hideUserForm').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'none';
+        });
+
+        document.getElementById('userForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const supportLevel = document.getElementById('supportLevel').value;
+            document.getElementById('uploadForm').style.display = 'block';
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('uploadForm').usuario.value = usuario;
+            document.getElementById('uploadForm').supportLevel.value = supportLevel;
+        });
+
+        // Function to get query parameters
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        // Pre-fill form fields with query parameters
+        const params = getQueryParams();
+        if (params.usuario) {
+            document.getElementById('usuario').value = params.usuario;
+        }
+        if (params.supportLevel) {
+            document.getElementById('supportLevel').value = params.supportLevel;
+        }
+
         const imageInput = document.getElementById('data6');
         const imageDescriptionsContainer = document.getElementById('image-descriptions');
 
@@ -222,7 +245,6 @@
                 descInput.type = 'text';
                 descInput.name = 'data7[]';
                 descInput.placeholder = 'Descrição da imagem';
-                descInput.required = true;
 
                 // Create the remove button
                 const removeBtn = document.createElement('button');
@@ -237,7 +259,7 @@
                     currentFiles.forEach(file => dt.items.add(file));
                     imageInput.files = dt.files;
 
-                    // Remove the description field
+                    // Remove the description div
                     descDiv.remove();
                 });
 

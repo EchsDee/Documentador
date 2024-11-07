@@ -46,7 +46,7 @@ def get_data_from_api(api_url):
         print(f"Error in API request: {e}")
         return None
 
-@app.route('/')
+@app.route('/index')
 def index():
     # Fetch data from the API
     clients_data = get_data_from_api(api_url)
@@ -56,6 +56,11 @@ def index():
 
     # Pass the data to the HTML template
     return render_template('index.html', clients=clients_data)
+
+@app.route('/')
+def front():
+    return render_template('front.html')
+
 
 @app.route('/process_template', methods=['POST'])
 def process_template():
