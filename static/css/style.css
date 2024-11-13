@@ -1,0 +1,152 @@
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: #142532;
+    margin: 0;
+    padding: 0;
+    color: #0a2751;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+h1 {
+    text-align: center;
+    color: #0a2751;
+}
+
+h2 {
+    text-align: center;
+    color: #0a2751;
+}
+
+.form-group {
+    margin-top: 10px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+textarea.form-control {
+    overflow: hidden;
+}
+
+textarea.form-control.descricao {
+    overflow: hidden;
+    resize: none;
+    min-height: 38px; /* Match the height of input.form-control */
+    flex-grow: 1; /* Allow textarea to grow */
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+    background-color: #0467c6;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #0467c6;
+    display: block;
+    margin: 0 auto;
+}
+
+.btn-primary:hover {
+    background-color: #0355a9;
+}
+
+.btn-success {
+    background-color: #5ef906;
+    display: block;
+    margin: 0 auto;
+
+}
+
+.btn-success:hover {
+    background-color: #4cdf06;
+}
+
+.descricao {
+    display: flex;
+    justify-content: flex-end;
+    border-radius: 3px;
+    width: 66.66%;
+    height: 45px;
+    border: 1px solid lightgrey;
+    align-items: stretch; /* Ensure children stretch to the same height */
+}
+
+.pop-in-form {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+.pop-in-form h2 {
+    text-align: center;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.corner-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.image-description img {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+    margin-bottom: 10px; 
+    border: 1px solid black;
+}
+
+.image-description {
+    margin-bottom: 20px;
+}
+
+.remove-pair {
+    background-color: red;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    flex: 0 0 100px; /* Fixed width for the button */
+    max-height: 45px;
+    align-self: flex-end; /* Align to the bottom */
+}

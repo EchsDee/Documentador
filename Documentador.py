@@ -10,7 +10,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.utils import secure_filename
 from docx.opc.exceptions import PackageNotFoundError
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 template_path = os.path.join(os.getcwd(),'doc', 'TemplateDocument.docx')
 api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
@@ -196,4 +196,4 @@ def process_uploaded_doc(uploaded_doc_path, output_path):
     uploaded_doc.save(output_path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='localhost', port=8000, debug=True)
