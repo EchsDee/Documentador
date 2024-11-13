@@ -175,6 +175,10 @@
             <div id="image-descriptions" class="form-group">
                 <!-- Description fields will be added here -->
             </div>
+            <div class="form-group" id="additionalFileUpload" style="display: none;">
+                <label for="additionalFile">Upload Additional File:</label>
+                <input type="file" class="form-control" id="additionalFile" name="additionalFile">
+            </div>
             <button type="submit" class="btn btn-success">Enviar</button>
         </form>
     </div>
@@ -223,6 +227,9 @@
             document.getElementById('hiddenSupportLevel').value = params.supportLevel;
             document.getElementById('supportLevel').value = params.supportLevel;
             document.getElementById('supportLevelDisplay').textContent = params.supportLevel;
+            if (params.supportLevel === '2') {
+                document.getElementById('additionalFileUpload').style.display = 'block';
+            }
         }
 
         document.getElementById('showFormsButton').addEventListener('click', function() {
@@ -237,6 +244,9 @@
             const supportLevel = document.getElementById('supportLevel').value;
             document.getElementById('hiddenUsuario').value = usuario;
             document.getElementById('hiddenSupportLevel').value = supportLevel;
+            if (supportLevel === '2') {
+                document.getElementById('additionalFileUpload').style.display = 'block';
+            }
             document.getElementById('uploadForm').style.display = 'block';
             document.getElementById('userForm').style.display = 'none';
         });
