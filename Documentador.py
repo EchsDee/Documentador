@@ -9,6 +9,7 @@ import json
 from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.utils import secure_filename
 from docx.opc.exceptions import PackageNotFoundError
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 app = Flask(__name__, static_folder='static')
 
@@ -131,29 +132,83 @@ def save_image(file):
 def insert_all_images_with_description(doc_path, image_files, image_descriptions, insertion_placeholder='@prints'):
     doc = Document(doc_path)
     
+    # Flag to check if placeholder is found
+    placeholder_found = False
+    
     # Search in body paragraphs
-    for paragraph in doc.paragraphs:
+    for idx, paragraph in enumerate(doc.paragraphs):
         if insertion_placeholder in paragraph.text:
-            paragraph.text = ''  # Clear the placeholder
+            placeholder_found = True
+            # Remove the placeholder paragraph
+            p = paragraph._element
+            p.getparent().remove(p)
+            p._p = p._element = None
+
+            # Insert images and descriptions at the placeholder position
             for image_file, description in zip(image_files, image_descriptions):
+                # Add description as a new paragraph
+                description_paragraph = doc.add_paragraph(description)
+                description_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                doc.paragraphs.insert(idx, description_paragraph)
+                idx += 1
+                # Add image as a new paragraph with increased size
                 image_path = save_image(image_file)
-                paragraph.add_run(description + '\n')
-                paragraph.add_run().add_picture(image_path, width=Inches(1.0))
+                picture_paragraph = doc.add_paragraph()
+                picture_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                picture_run = picture_paragraph.add_run()
+                picture_run.add_picture(image_path, width=Inches(2.0))  # Increased width
+                doc.paragraphs.insert(idx, picture_paragraph)
+                idx += 1
+                # Add an empty paragraph for spacing
+                spacing_paragraph = doc.add_paragraph()
+                spacing_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                doc.paragraphs.insert(idx, spacing_paragraph)
+                idx += 1
+            break  # Placeholder found and processed
+    
+    # If placeholder was not found in body, search in table cells
+    if not placeholder_found:
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for idx, paragraph in enumerate(cell.paragraphs):
+                        if insertion_placeholder in paragraph.text:
+                            # Remove the placeholder paragraph
+                            p = paragraph._element
+                            p.getparent().remove(p)
+                            p._p = p._element = None
+
+                            # Insert images and descriptions at the placeholder position
+                            for image_file, description in zip(image_files, image_descriptions):
+                                # Add description as a new paragraph
+                                description_paragraph = cell.add_paragraph(description)
+                                description_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                                cell.paragraphs.insert(idx, description_paragraph)
+                                idx += 1
+                                # Add image as a new paragraph with increased size
+                                image_path = save_image(image_file)
+                                picture_paragraph = cell.add_paragraph()
+                                picture_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                                picture_run = picture_paragraph.add_run()
+                                picture_run.add_picture(image_path, width=Inches(2.0))  # Increased width
+                                cell.paragraphs.insert(idx, picture_paragraph)
+                                idx += 1
+                                # Add an empty paragraph for spacing
+                                spacing_paragraph = cell.add_paragraph()
+                                spacing_paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                                cell.paragraphs.insert(idx, spacing_paragraph)
+                                idx += 1
+                            break  # Placeholder found and processed
+                    else:
+                        continue
+                    break
+                else:
+                    continue
+                break
+            else:
+                continue
             break
-    
-    # Search in table cells
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    if insertion_placeholder in paragraph.text:
-                        paragraph.text = ''  # Clear the placeholder
-                        for image_file, description in zip(image_files, image_descriptions):
-                            image_path = save_image(image_file)
-                            paragraph.add_run(description + '\n')
-                            paragraph.add_run().add_picture(image_path, width=Inches(1.0))
-                        break
-    
+
     doc.save(doc_path)
 
 def process_uploaded_doc(uploaded_doc_path, output_path):
