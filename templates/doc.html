@@ -6,15 +6,14 @@
     <title>Documentador</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open%20Sans">
 </head>
 <body>
     <div class="container">
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo" width="200px" height="100px">
 
-        <h1><strong>Documentação</strong></h1>
-        <h5><strong>Usuário: </strong></h5>
-        <h6><span id="usuarioDisplay"></span></h6>
+        <h1>D O C U M E N T A D O R</h1>
+        <h5><strong>Usuário: </strong><span class="usuarionome" id="usuarioDisplay"></span></h5> 
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
             <input type="hidden" id="hiddenUsuario" name="usuario">
             <input type="hidden" id="hiddenSupportLevel" name="supportLevel">
@@ -33,13 +32,37 @@
             </div>
             <div class="form-group" id="moduloField">
                 <label for="modulo">Módulo:</label>
-                <select class="form-control" id="modulo" name="data3">
+                <select class="form-control" id="modulo" name="data3" required>
                     <option value="Administrador">Administrador</option>
                     <option value="Gestão Administrativa">Gestão Administrativa</option>
                     <option value="Arquivos Digitais">Arquivos Digitais</option>
                     <option value="Atualizador">Atualizador</option>
                     <option value="Autocenter">Autocenter</option>
-                    <!-- Adicione outras opções conforme necessário -->
+                    <option value="Cereais">Cereais</option>
+                    <option value="Concreteira">Concreteira</option>
+                    <option value="Contabil">Contabil</option>
+                    <option value="crm">CRM</option>
+                    <option value="customvans">Customvans</option>
+                    <option value="demanda">Demanda</option>
+                    <option value="Especifico">Especifico</option>
+                    <option value="Florestas">Florestas</option>
+                    <option value="frotas">Frotas</option>
+                    <option value="Gestão pessoal">Gestão Pessoal</option>
+                    <option value="Helpdesk">HelpDesk</option>
+                    <option value="Invoice">Invoice</option>
+                    <option value="JuntaComercial">JuntaComercial</option>
+                    <option value="Lavouras">Lavouras</option>
+                    <option value="Manutenção">Manutenção</option>
+                    <option value="emissor MDFE">emissor MDFE</option>
+                    <option value="Transportes">Transportes</option>
+                    <option value="Vendas">Vendas</option>
+                    <option value="Vendas_pdv">Vendas_pdv</option>
+                    <option value="Vendor">Vendor</option>
+                    <option value="auditor">Auditor</option>
+                    <option value="servidor de notas">Servidor de Notas</option>
+                    <option value="Praxis">Praxis</option>
+                    <option value="painel">painel</option>
+                    <option value="wms">WMS</option>
                 </select>
             </div>
             <div class="form-group">
@@ -57,17 +80,19 @@
             <div id="image-descriptions" class="form-group">
                 <!-- Description fields will be added here -->
             </div>
+            <br>
             <button type="submit" class="btn btn-success">Enviar</button>
         </form>
     </div>
 
-    <button id="showFormsButton" class="corner-button">Trocar Função</span></button>
+    <button id="showFormsButton" class="corner-button"><strong>Trocar Função</strong></button>
     
     <div class="pop-in-form" id="userForm">
         <h2 style="color: #0a2751;"><strong>Acesso</strong></h2>
+        <button type="button" id="minimizeButton" class="btn btn-secondary btn-sm minimize" style="color: black;"><strong>-</strong></button>
         <form id="userFormInner">
             <div class="form-group">
-                <label for="usuario">Usuario:</label>
+                <label for="usuario">Usuário:</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
             <div class="form-group">
@@ -77,11 +102,13 @@
                     <option value="2" selected>Adicionar Teste</option>
                 </select>
             </div>
+            <br>
             <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </div>
 
-    <script>
+    <script>    
+
         // Function to get query parameters
         function getQueryParams() {
             const params = {};
@@ -94,10 +121,15 @@
             return params;
         }
 
+        // Evento para minimizar o formulário de acesso
+        document.getElementById('minimizeButton').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('showFormsButton').style.display = 'block';
+        });
+
         document.getElementById('showFormsButton').addEventListener('click', function() {
             document.getElementById('userForm').style.display = 'block';
-            document.getElementById('uploadForm').style.display = 'block';
-            document.getElementById('showFormsButton').style.display = 'none';
+            this.style.display = 'none';
         });
 
         document.getElementById('userFormInner').addEventListener('submit', function(event) {
@@ -233,12 +265,37 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('userForm').style.display = 'none';
+        document.getElementById('showFormsButton').style.display = 'block';
+
         const params = getQueryParams();
         if (params.usuario) {
             document.getElementById('usuarioDisplay').textContent = params.usuario;
-            document.getElementById('usuario').value = params.usuario; // Adicionado
+            document.getElementById('usuario').value = params.usuario; 
+        } 
+        }
+    );
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const descriptionField = document.getElementById('data5');
+        let isFirstClick = true;
+
+        descriptionField.addEventListener('focus', function() {
+            if (isFirstClick) {
+                alert("Ajude-nos a lhe ajudar!\nColoque sempre o caminho completo para chegar ao erro.\nExemplo: Botão1 -> Botão2 -> ... -> Erro");
+                isFirstClick = false;
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('data4');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
         }
     });
+
     </script>
 </body>
 </html>

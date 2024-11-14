@@ -1,5 +1,4 @@
 body {
-    font-family: 'Roboto Mono', monospace;
     background-color: #142532;
     margin: 0;
     padding: 0;
@@ -169,4 +168,17 @@ textarea.form-control.descricao {
     border: lightgreen;
     background-color: white;
     border-radius: 5px;
+}
+
+.minimize {
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    color: #0a2751;
+}
+
+.usuarionome {
+    color: black;
 }

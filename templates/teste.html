@@ -12,9 +12,8 @@
     <div class="container">
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo" width="200px" height="100px">
 
-        <h1><strong>Testes</strong></h1>
-        <h5><strong>Usuário: </strong></h5>
-        <h6><span id="usuarioDisplay"></span></h6>
+        <h1>T E S T E S</h1>
+        <h5><strong>Usuário: </strong><span class="usuarionome" id="usuarioDisplay"></span></h5> 
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
             <input type="hidden" id="hiddenUsuario" name="usuario">
             <input type="hidden" id="hiddenSupportLevel" name="supportLevel">
@@ -35,20 +34,23 @@
                 <!-- Description fields will be added here -->
             </div>
             <div class="form-group" id="additionalFileUpload">
-                <label for="additionalFile">Upload Additional File:</label>
+                <label for="additionalFile">Upload Documentação:</label>
                 <input type="file" class="form-control" id="additionalFile" name="additionalFile">
             </div>
+            <br>
             <button type="submit" class="btn btn-success">Enviar</button>
         </form>
     </div>
 
-    <button id="showFormsButton" class="corner-button">Trocar Função</button>
+    <button id="showFormsButton" class="corner-button"><strong>Trocar Função</strong></button>
 
     <div class="pop-in-form" id="userForm">
-        <h2>Acesso</h2>
+        <h2 style="color: #0a2751;"><strong>Acesso</strong></h2>
+        <button type="button" id="minimizeButton" class="btn btn-secondary btn-sm minimize" style="color: black;"><strong>-</strong></button>
+
         <form id="userFormInner">
             <div class="form-group">
-                <label for="usuario">Usuario:</label>
+                <label for="usuario">Usuário:</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
             <div class="form-group">
@@ -58,6 +60,7 @@
                     <option value="2">Adicionar Teste</option>
                 </select>
             </div>
+            <br>
             <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </div>
@@ -81,6 +84,10 @@
             document.getElementById('userForm').style.display = 'block';
             document.getElementById('uploadForm').style.display = 'block';
             document.getElementById('showFormsButton').style.display = 'none';
+        });
+        document.getElementById('minimizeButton').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('showFormsButton').style.display = 'block';
         });
 
         document.getElementById('userFormInner').addEventListener('submit', function(event) {
@@ -178,11 +185,39 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+
+        document.getElementById('userForm').style.display = 'none';
+        document.getElementById('showFormsButton').style.display = 'block';
+
+
         const params = getQueryParams();
         if (params.usuario) {
             document.getElementById('usuarioDisplay').textContent = params.usuario;
             document.getElementById('usuario').value = params.usuario; // Adicionado
-        }});
+        }
+        }
+    );
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const descriptionField = document.getElementById('data5');
+        let isFirstClick = true;
+
+        descriptionField.addEventListener('focus', function() {
+            if (isFirstClick) {
+                alert("Lembre-se!\nColoque sempre o caminho completo para chegar ao erro.\nExemplo: Botão1 -> Botão2 -> ... -> Erro");
+                isFirstClick = false;
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('data4');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        }
+    });
+
     </script>
 </body>
 </html>
