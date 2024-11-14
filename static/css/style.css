@@ -45,6 +45,15 @@ label {
     box-sizing: border-box;
 }
 
+.form-control-desc {
+    width: 80%;
+    padding: 10px;
+    margin-right: 23px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
 textarea.form-control {
     overflow: hidden;
 }
@@ -149,4 +158,15 @@ textarea.form-control.descricao {
     flex: 0 0 100px; /* Fixed width for the button */
     max-height: 45px;
     align-self: flex-end; /* Align to the bottom */
+}
+
+.corner-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1001;
+    padding: 10px;
+    border: lightgreen;
+    background-color: white;
+    border-radius: 5px;
 }

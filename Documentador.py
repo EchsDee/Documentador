@@ -45,10 +45,15 @@ def get_data_from_api(api_url):
         print(f"Error decoding JSON: {e}")
         return []
 
-@app.route('/index')
-def index():
+@app.route('/doc')
+def doc():
     clients_data = get_data_from_api(api_url)
-    return render_template('index.html', clients=clients_data)
+    return render_template('doc.html', clients=clients_data)
+
+@app.route('/teste')
+def teste():
+    clients_data = get_data_from_api(api_url)
+    return render_template('teste.html', clients=clients_data)
 
 @app.route('/')
 def front():
@@ -73,7 +78,7 @@ def process_template():
     modified_filename = f'DOCUMENTAÇÃO - {secure_filename(data2 or "document")}.docx'
     modified_path = os.path.join(temp_dir, modified_filename)
 
-    if support_level == '2' and 'additionalFile' in request.files:
+    if 'additionalFile' in request.files:
         # Handle uploaded document
         additional_file = request.files['additionalFile']
         additional_file_path = os.path.join(temp_dir, secure_filename(additional_file.filename))

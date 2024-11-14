@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo" width="200px" height="100px">
+
+        <h1><strong>Testes</strong></h1>
+        <h5><strong>Usuário: </strong></h5>
+        <h6><span id="usuarioDisplay"></span></h6>
+        <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="hiddenUsuario" name="usuario">
+            <input type="hidden" id="hiddenSupportLevel" name="supportLevel">
+           
+            <div class="form-group">
+                <label for="data4">Data:</label>
+                <input type="date" class="form-control" id="data4" name="data4" required>
+            </div>
+            <div class="form-group">
+                <label for="data5">Descrição:</label>
+                <textarea class="form-control" id="data5" name="data5" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="data6">Imagens:</label>
+                <input type="file" class="form-control" id="data6" name="data6[]" accept=".png, .jpg, .jpeg" multiple>
+            </div>
+            <div id="image-descriptions" class="form-group">
+                <!-- Description fields will be added here -->
+            </div>
+            <div class="form-group" id="additionalFileUpload">
+                <label for="additionalFile">Upload Additional File:</label>
+                <input type="file" class="form-control" id="additionalFile" name="additionalFile">
+            </div>
+            <button type="submit" class="btn btn-success">Enviar</button>
+        </form>
+    </div>
+
+    <button id="showFormsButton" class="corner-button">Trocar Função</button>
+
+    <div class="pop-in-form" id="userForm">
+        <h2>Acesso</h2>
+        <form id="userFormInner">
+            <div class="form-group">
+                <label for="usuario">Usuario:</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="supportLevel">Função:</label>
+                <select class="form-control" id="supportLevel" name="supportLevel" required>
+                    <option value="1">Criar Documentação</option>
+                    <option value="2">Adicionar Teste</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Continuar</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to get query parameters
+        function getQueryParams() {
+            const params = {};
+            const queryString = window.location.search.substring(1);
+            const regex = /([^&=]+)=([^&]*)/g;
+            let m;
+            while (m = regex.exec(queryString)) {
+                params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            return params;
+        }
+
+        
+
+        document.getElementById('showFormsButton').addEventListener('click', function() {
+            document.getElementById('userForm').style.display = 'block';
+            document.getElementById('uploadForm').style.display = 'block';
+            document.getElementById('showFormsButton').style.display = 'none';
+        });
+
+        document.getElementById('userFormInner').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('usuario').value;
+            const supportLevel = document.getElementById('supportLevel').value;
+
+            if (supportLevel === '1') {
+                window.location.href = '/doc?usuario=' + encodeURIComponent(usuario);
+            } else if (supportLevel === '2') {
+                window.location.href = '/teste?usuario=' + encodeURIComponent(usuario);
+            }
+        });
+
+        const imageInput = document.getElementById('data6');
+        const imageDescriptionsContainer = document.getElementById('image-descriptions');
+
+        imageInput.addEventListener('change', function() {
+            // Clear previous descriptions
+            imageDescriptionsContainer.innerHTML = '';
+
+            const files = Array.from(this.files);
+            files.forEach((file, index) => {
+                const descDiv = document.createElement('div');
+                descDiv.className = 'image-description';
+
+                // Create the image preview
+                const img = document.createElement('img');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+
+                // Create the description input
+                const descInput = document.createElement('input');
+                descInput.type = 'text';
+                descInput.className = 'form-control-desc';
+                descInput.name = 'data7[]';
+                descInput.placeholder = 'Descrição da imagem';
+
+                // Create the remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-pair';
+                removeBtn.textContent = 'Remover';
+                removeBtn.addEventListener('click', function() {
+                    // Remove the file from the file input
+                    const dt = new DataTransfer();
+                    const currentFiles = Array.from(imageInput.files);
+                    currentFiles.splice(index, 1);
+                    currentFiles.forEach(file => dt.items.add(file));
+                    imageInput.files = dt.files;
+
+                    // Remove the description div
+                    descDiv.remove();
+                });
+
+                // Append elements to the description div
+                descDiv.appendChild(img);
+                descDiv.appendChild(descInput);
+                descDiv.appendChild(removeBtn);
+
+                // Append the description div to the container
+                imageDescriptionsContainer.appendChild(descDiv);
+            });
+        });
+
+        // Função para mostrar ou esconder campos com base no nível de suporte
+        function toggleFields(supportLevel) {
+            const chamadoField = document.getElementById('chamadoField');
+            const clienteField = document.getElementById('clienteField');
+            const moduloField = document.getElementById('moduloField');
+            const additionalFileUpload = document.getElementById('additionalFileUpload');
+
+            if (supportLevel === currentSupportLevel) {
+                // Minimizar o formulário sem desaparecer
+                const userForm = document.getElementById('userForm');
+                if (userForm.style.display === 'none' || userForm.style.display === '') {
+                    userForm.style.display = 'block';
+                } else {
+                    userForm.style.display = 'none';
+                }
+            }
+        }
+        function getQueryParams() {
+        const params = {};
+        const queryString = window.location.search.substring(1);
+        const regex = /([^&=]+)=([^&]*)/g;
+        let m;
+        while (m = regex.exec(queryString)) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return params;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = getQueryParams();
+        if (params.usuario) {
+            document.getElementById('usuarioDisplay').textContent = params.usuario;
+            document.getElementById('usuario').value = params.usuario; // Adicionado
+        }});
+    </script>
+</body>
+</html>

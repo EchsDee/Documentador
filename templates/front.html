@@ -18,7 +18,7 @@
                 <input type="text" class="form-control" id="usuario" name="usuario" required>
             </div>
             <div class="form-group">
-                <label for="supportLevel">Nível de Suporte:</label>
+                <label for="supportLevel">Função:</label>
                 <select class="form-control" id="supportLevel" name="supportLevel" required>
                     <option value="1">Criar Documentação</option>
                     <option value="2">Adicionar Teste</option>
@@ -35,8 +35,30 @@
             event.preventDefault();
             const usuario = document.getElementById('usuario').value;
             const supportLevel = document.getElementById('supportLevel').value;
-            window.location.href = `index?usuario=${encodeURIComponent(usuario)}&supportLevel=${encodeURIComponent(supportLevel)}`;
+            
+            if (supportLevel === '1') {
+                window.location.href = '/doc?usuario=' + encodeURIComponent(usuario);
+            } else if (supportLevel === '2') {
+                window.location.href = '/teste?usuario=' + encodeURIComponent(usuario);
+            }
         });
+
+        document.getElementById('supportLevel').addEventListener('change', function() {
+            const supportLevel = this.value;
+            const clienteField = document.getElementById('clienteField');
+            const moduloField = document.getElementById('moduloField');
+
+            if (supportLevel === '2') {
+                if (clienteField) clienteField.style.display = 'none';
+                if (moduloField) moduloField.style.display = 'none';
+            } else {
+                if (clienteField) clienteField.style.display = 'block';
+                if (moduloField) moduloField.style.display = 'block';
+            }
+        });
+
+        // Trigger change event on page load to set the correct state
+        document.getElementById('supportLevel').dispatchEvent(new Event('change'));
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
