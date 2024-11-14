@@ -10,6 +10,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.utils import secure_filename
 from docx.opc.exceptions import PackageNotFoundError
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+import logging
+from docx.oxml.ns import qn
 
 app = Flask(__name__, static_folder='static')
 
@@ -67,7 +69,7 @@ def process_template():
     data3 = request.form.get('data3', '')
     data4 = request.form.get('data4', '')
     data5 = request.form.get('data5', '')
-    usuario = request.form.get('usuario', '')
+    usuario = request.form.get('hiddenUsuario', 'nao informado')
     support_level = request.form.get('supportLevel', '')
 
     # Prepare image files and descriptions
@@ -86,7 +88,7 @@ def process_template():
 
         try:
             # Merge uploaded document with half-template
-            process_uploaded_doc(additional_file_path, modified_path)
+            process_uploaded_doc(additional_file_path, half_template_path, modified_path)
         except PackageNotFoundError:
             return "Uploaded file is not a valid DOCX file.", 400
 
@@ -195,7 +197,7 @@ def insert_all_images_with_description(doc_path, image_files, image_descriptions
                                 picture_paragraph = cell.add_paragraph()
                                 picture_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
                                 picture_run = picture_paragraph.add_run()
-                                picture_run.add_picture(image_path, width=Inches(2.0))  # Increased width
+                                picture_run.add_picture(image_path, width=Inches(5.0))  # Increased width
                                 cell.paragraphs.insert(idx, picture_paragraph)
                                 idx += 1
                                 # Add an empty paragraph for spacing
@@ -216,43 +218,64 @@ def insert_all_images_with_description(doc_path, image_files, image_descriptions
 
     doc.save(doc_path)
 
-def process_uploaded_doc(uploaded_doc_path, output_path):
+
+def delete_between_markers(doc, start_text, end_text):
+    body = doc.element.body
+    start_found = False
+    elements_to_remove = []
+
+    for child in list(body):
+        if not start_found:
+            if child.tag == qn('w:p'):
+                paragraphs = child.findall('.//w:t', namespaces=child.nsmap)
+                para_text = ''.join([t.text for t in paragraphs if t.text])
+                if start_text in para_text:
+                    logging.debug(f"Start marker '{start_text}' found.")
+                    start_found = True
+            continue
+        else:
+            if child.tag == qn('w:p'):
+                paragraphs = child.findall('.//w:t', namespaces=child.nsmap)
+                para_text = ''.join([t.text for t in paragraphs if t.text])
+                if end_text in para_text:
+                    logging.debug(f"End marker '{end_text}' found. Removing this element.")
+                    elements_to_remove.append(child)
+                    break
+            elements_to_remove.append(child)
+
+    for element in elements_to_remove:
+        logging.debug(f"Removing element: {element.tag}")
+        body.remove(element)
+
+def process_uploaded_doc(uploaded_doc_path, half_template_path, output_path):
     # Open the uploaded document
     uploaded_doc = Document(uploaded_doc_path)
-
     # Open the half-template document
     half_template_doc = Document(half_template_path)
+    
+    
+    # Replace placeholders in both documents
+    placeholders = {
+        '@chamado': request.form.get('data1', ''),
+        '@cliente': request.form.get('data2', ''),
+        '@modulo': request.form.get('data3', ''),
+        '@data': request.form.get('data4', ''),
+        '@descricao': request.form.get('data5', ''),
+        '@usuario': request.form.get('hiddenUsuario', 'nao informado')
+    }
 
-    # Apply placeholders to the half-template document
-    replace_placeholder(half_template_doc, '@chamado', request.form.get('data1', ''))
-    replace_placeholder(half_template_doc, '@cliente', request.form.get('data2', ''))
-    replace_placeholder(half_template_doc, '@modulo', request.form.get('data3', ''))
-    replace_placeholder(half_template_doc, '@data', request.form.get('data4', ''))
-    replace_placeholder(half_template_doc, '@descricao', request.form.get('data5', ''))
-    replace_placeholder(half_template_doc, '@usuario', request.form.get('usuario', ''))
-
-    # Find the specific line in the uploaded document
-    found = False
-    for i, paragraph in enumerate(uploaded_doc.paragraphs):
-        if 'PREENCHIMENTO DO TESTE E QUALIDADE' in paragraph.text:
-            found = True
-            index = i
-            break
-
-    if found:
-        # Remove all paragraphs after the found line
-        for _ in range(len(uploaded_doc.paragraphs) - index - 1):
-            p = uploaded_doc.paragraphs[index + 1]
-            p._element.getparent().remove(p._element)
-
-        # Append the modified half-template content to the uploaded document
-        for element in half_template_doc.element.body:
-            uploaded_doc.element.body.append(element)
-    else:
-        # If the line is not found, handle accordingly (optional)
-        pass
-
-    # Save the modified uploaded document to the output path
+    for placeholder, value in placeholders.items():
+        replace_placeholder(uploaded_doc, placeholder, value)
+        replace_placeholder(half_template_doc, placeholder, value)
+      
+    # Merge the modified half-template into the uploaded document
+    for element in half_template_doc.element.body:
+        uploaded_doc.element.body.append(element)
+    
+    # Delete content between markers
+    delete_between_markers(uploaded_doc, "PREENCHIMENTO DO TESTE E QUALIDADE", "@stop")
+    
+    # Save the merged document
     uploaded_doc.save(output_path)
 
 if __name__ == '__main__':

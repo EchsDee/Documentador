@@ -15,7 +15,7 @@
         <h1>T E S T E S</h1>
         <h5><strong>Usuário: </strong><span class="usuarionome" id="usuarioDisplay"></span></h5> 
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
-            <input type="hidden" id="hiddenUsuario" name="usuario">
+            <input type="hidden" id="hiddenUsuario" name="hiddenUsuario" value="{{ usuario }}">
             <input type="hidden" id="hiddenSupportLevel" name="supportLevel">
            
             <div class="form-group">
@@ -94,7 +94,7 @@
             event.preventDefault();
             const usuario = document.getElementById('usuario').value;
             const supportLevel = document.getElementById('supportLevel').value;
-
+            document.getElementById('hiddenUsuario').value = usuario;
             if (supportLevel === '1') {
                 window.location.href = '/doc?usuario=' + encodeURIComponent(usuario);
             } else if (supportLevel === '2') {
@@ -194,6 +194,7 @@
         if (params.usuario) {
             document.getElementById('usuarioDisplay').textContent = params.usuario;
             document.getElementById('usuario').value = params.usuario; // Adicionado
+            document.getElementById('hiddenUsuario').value = params.usuario;
         }
         }
     );
@@ -219,5 +220,28 @@
     });
 
     </script>
+    <script>
+    function getQueryParams() {
+        const params = {};
+        const queryString = window.location.search.substring(1);
+        const regex = /([^&=]+)=([^&]*)/g;
+        let m;
+        while (m = regex.exec(queryString)) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return params;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('userForm').style.display = 'none';
+        document.getElementById('showFormsButton').style.display = 'block';
+
+        const params = getQueryParams();
+        if (params.usuario) {
+            document.getElementById('usuarioDisplay').textContent = params.usuario;
+            document.getElementById('hiddenUsuario').value = params.usuario;
+        }
+    });
+</script>
 </body>
 </html>
