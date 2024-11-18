@@ -92,6 +92,8 @@ def process_template():
             process_uploaded_doc(additional_file_path, half_template_path, modified_path)
         except PackageNotFoundError:
             return "Uploaded file is not a valid DOCX file.", 400
+        # Define 'doc' after processing
+        doc = Document(modified_path)
     else:
         # No additional file uploaded, use default values
         modified_filename = f'DOCUMENTAÇÃO - {secure_filename(data2 or "document")}.docx'
@@ -99,6 +101,7 @@ def process_template():
         doc = Document(template_path)
         doc.save(modified_path)
 
+    # Now 'doc' is defined in both cases
     # Replace placeholders in the document
     replace_placeholder(doc, '@chamado', data1)
     replace_placeholder(doc, '@cliente', data2)
