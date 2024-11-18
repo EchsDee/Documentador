@@ -200,18 +200,6 @@
     );
 
     document.addEventListener('DOMContentLoaded', () => {
-        const descriptionField = document.getElementById('data5');
-        let isFirstClick = true;
-
-        descriptionField.addEventListener('focus', function() {
-            if (isFirstClick) {
-                alert("Lembre-se!\nColoque sempre o caminho completo para chegar ao erro.\nExemplo: Botão1 -> Botão2 -> ... -> Erro");
-                isFirstClick = false;
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
         const dateInput = document.getElementById('data4');
         if (dateInput) {
             const today = new Date().toISOString().split('T')[0];
@@ -242,6 +230,7 @@
             document.getElementById('hiddenUsuario').value = params.usuario;
         }
     });
+
 </script>
 </body>
 </html>

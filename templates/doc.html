@@ -12,7 +12,7 @@
     <div class="container">
         <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="logo" width="200px" height="100px">
 
-        <h1>D O C U M E N T A D O R</h1>
+        <h1>D O C U M E N T A Ç Ã O</h1>
         <h5><strong>Usuário: </strong><span class="usuarionome" id="usuarioDisplay"></span></h5> 
         <form id="uploadForm" action="/process_template" method="post" enctype="multipart/form-data">
             <input type="hidden" id="hiddenUsuario" name="hiddenUsuario" value="{{ usuario }}">
@@ -37,17 +37,17 @@
                     <option value="Gestão Administrativa">Gestão Administrativa</option>
                     <option value="Arquivos Digitais">Arquivos Digitais</option>
                     <option value="Atualizador">Atualizador</option>
-                    <option value=r"Autocenter">Autocenter</option>
+                    <option value="Autocenter">Autocenter</option>
                     <option value="Cereais">Cereais</option>
                     <option value="Concreteira">Concreteira</option>
                     <option value="Contabil">Contabil</option>
-                    <option value=e"crm">CRM</option>
+                    <option value="crm">CRM</option>
                     <option value="customvans">Customvans</option>
                     <option value="demanda">Demanda</option>
                     <option value="Especifico">Especifico</option>
                     <option value="Florestas">Florestas</option>
                     <option value="frotas">Frotas</option>
-                    <option value=m"Gestão pessoal">Gestão Pessoal</option>
+                    <option value="Gestão pessoal">Gestão Pessoal</option>
                     <option value="Helpdesk">HelpDesk</option>
                     <option value="Invoice">Invoice</option>
                     <option value="JuntaComercial">JuntaComercial</option>
@@ -277,18 +277,6 @@
     );
 
     document.addEventListener('DOMContentLoaded', () => {
-        const descriptionField = document.getElementById('data5');
-        let isFirstClick = true;
-
-        descriptionField.addEventListener('focus', function() {
-            if (isFirstClick) {
-                alert("Ajude-nos a lhe ajudar!\nColoque sempre o caminho completo para chegar ao erro.\nExemplo: Botão1 -> Botão2 -> ... -> Erro");
-                isFirstClick = false;
-            }
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
         const dateInput = document.getElementById('data4');
         if (dateInput) {
             const today = new Date().toISOString().split('T')[0];
@@ -301,6 +289,34 @@
         var usuario = document.getElementById('usuario').value;
         // Set the value of the hidden input in 'uploadForm'
         document.getElementById('hiddenUsuario').value = usuario;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const descriptionField = document.getElementById('data5');
+    let isFirstClick = true;
+
+    descriptionField.addEventListener('focus', function() {
+            if (isFirstClick) {
+                const alertBox = document.createElement('div');
+                alertBox.innerHTML = "Atenção! Coloque sempre o caminho completo para chegar ao erro.<br>Exemplo: Botão1 -> Botão2 -> ... -> Erro";
+                alertBox.style.position = 'fixed';
+                alertBox.style.top = '20px';
+                alertBox.style.left = '50%';
+                alertBox.style.transform = 'translateX(-50%)';
+                alertBox.style.backgroundColor = '#f8d7da';
+                alertBox.style.color = '#721c24';
+                alertBox.style.padding = '10px';
+                alertBox.style.border = '1px solid #f5c6cb';
+                alertBox.style.borderRadius = '5px';
+                document.body.appendChild(alertBox);
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 5000); // Remove the alert after 5 seconds
+
+                isFirstClick = false;
+            }
+        });
     });
     </script>
 </body>
