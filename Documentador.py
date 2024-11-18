@@ -12,6 +12,7 @@ from docx.opc.exceptions import PackageNotFoundError
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 import logging
 from docx.oxml.ns import qn
+from waitress import serve
 
 app = Flask(__name__, static_folder='static')
 
@@ -77,14 +78,14 @@ def process_template():
     image_descriptions = request.form.getlist('data7[]')
 
     # Set modified document path
-    modified_filename = f'DOCUMENTAÇÃO - {secure_filename(data2 or "document")}.docx'
-    modified_path = os.path.join(temp_dir, modified_filename)
-
     if 'additionalFile' in request.files:
         # Handle uploaded document
-        additional_file = request.files['additionalFile']
-        additional_file_path = os.path.join(temp_dir, secure_filename(additional_file.filename))
-        additional_file.save(additional_file_path)
+        uploaded_file = request.files['additionalFile']
+        uploaded_filename = secure_filename(uploaded_file.filename)
+        modified_filename = f"{os.path.splitext(uploaded_filename)[0]} {usuario} - testado.docx"
+        modified_path = os.path.join(temp_dir, modified_filename)
+        additional_file_path = os.path.join(temp_dir, uploaded_filename)
+        uploaded_file.save(additional_file_path)
 
         try:
             # Merge uploaded document with half-template
@@ -94,7 +95,9 @@ def process_template():
         # Define 'doc' after processing
         doc = Document(modified_path)
     else:
-        # Use the full template document
+        # No additional file uploaded, use default values
+        modified_filename = f'DOCUMENTAÇÃO - {secure_filename(data2 or "document")}.docx'
+        modified_path = os.path.join(temp_dir, modified_filename)
         doc = Document(template_path)
         doc.save(modified_path)
 
@@ -111,7 +114,7 @@ def process_template():
     # Insert images into the document
     insert_all_images_with_description(modified_path, image_files, image_descriptions)
 
-    return send_file(modified_path, as_attachment=True)
+    return send_file(modified_path, as_attachment=True, download_name=modified_filename)
 
 def replace_placeholder(doc, placeholder, replacement):
     for paragraph in doc.paragraphs:
@@ -278,5 +281,9 @@ def process_uploaded_doc(uploaded_doc_path, half_template_path, output_path):
     # Save the merged document
     uploaded_doc.save(output_path)
 
+#if __name__ == '__main__':
+   #app.run(host='localhost', port=8000, debug=True)
+
+#Modificado operação para Waitress pois o Flask não é recomendado para produção 
 if __name__ == '__main__':
-    app.run(host='localhost', port=8000, debug=True)
+    serve(app, host='localhost', port=8000)
