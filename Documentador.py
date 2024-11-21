@@ -16,14 +16,19 @@ from waitress import serve
 
 app = Flask(__name__, static_folder='static')
 
-template_path = os.path.join(os.getcwd(),'doc', 'TemplateDocument.docx')
+script_dir = os.path.dirname(os.path.abspath(__file__))
+template_path = os.path.join(script_dir, 'doc', 'TemplateDocument.docx')
 #api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
+api_url_path = os.path.join(script_dir, 'api_url.txt')
 
-with open('api_url.txt', 'r') as f:
+with open(api_url_path, 'r') as f:
     api_url = f.read().strip()
 
+#with open('api_url.txt', 'r') as f:
+#   api_url = f.read().strip()
+
 temp_dir = tempfile.mkdtemp()
-half_template_path = os.path.join(os.getcwd(),'doc', 'templateDocument-half-segundo.docx')  
+half_template_path = os.path.join(script_dir, 'doc', 'templateDocument-half-segundo.docx')  
 scheduler = BackgroundScheduler()
 scheduler.add_job(lambda: clean_temp_folder(temp_dir), 'interval', minutes=5)
 scheduler.start()
