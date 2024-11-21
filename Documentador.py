@@ -17,7 +17,10 @@ from waitress import serve
 app = Flask(__name__, static_folder='static')
 
 template_path = os.path.join(os.getcwd(),'doc', 'TemplateDocument.docx')
-api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
+#api_url = os.environ.get('API_URL') or 'http://3.140.207.100/api/getclientes.php'
+
+with open('api_url.txt', 'r') as f:
+    api_url = f.read().strip()
 
 temp_dir = tempfile.mkdtemp()
 half_template_path = os.path.join(os.getcwd(),'doc', 'templateDocument-half-segundo.docx')  
