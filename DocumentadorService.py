@@ -1,14 +1,22 @@
-import win32serviceutil
-import win32service
-import win32event
 import os
 import sys
-import multiprocessing
+import threading
+import win32event
+import win32service
+import win32serviceutil
+import logging
 from Documentador import app
 from waitress import serve
 
+# Add the directory containing DocumentadorService.py to the Python path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(script_dir)
+
 def run_server():
-    serve(app, host='0.0.0.0', port=8000)
+    try:
+        serve(app, host='0.0.0.0', port=8000)
+    except Exception as e:
+        logging.exception("Exception in run_server")
 
 class DocumentadorService(win32serviceutil.ServiceFramework):
     _svc_name_ = "DocumentadorService"
@@ -16,30 +24,32 @@ class DocumentadorService(win32serviceutil.ServiceFramework):
 
     def __init__(self, args):
         super().__init__(args)
-        self.stop_event = win32event.CreateEvent(None, 0, 0, None)
-        self.server_process = None
+        self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+        self.server_thread = None
 
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
-        if self.server_process and self.server_process.is_alive():
-            self.server_process.terminate()
-            self.server_process.join()
+        win32event.SetEvent(self.hWaitStop)
         self.ReportServiceStatus(win32service.SERVICE_STOPPED)
+        logging.info("Service stopped.")
 
     def SvcDoRun(self):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(script_dir)
+        logging.basicConfig(
+            filename='C:\\DocumentadorService\\service.log',
+            level=logging.DEBUG,
+            format='[%(asctime)s] %(levelname)s - %(message)s'
+        )
+        logging.info('Service is starting.')
 
-        self.server_process = multiprocessing.Process(target=run_server)
-        self.server_process.start()
+        try:
+            self.server_thread = threading.Thread(target=run_server)
+            self.server_thread.start()
+            logging.info('Server thread started.')
 
-        # Wait for the stop event to be set
-        win32event.WaitForSingleObject(self.stop_event, win32event.INFINITE)
-
-        # Cleanup if necessary
-        if self.server_process.is_alive():
-            self.server_process.terminate()
-            self.server_process.join()
+            win32event.WaitForSingleObject(self.hWaitStop, win32event.INFINITE)
+            logging.info('Stop signal received.')
+        except Exception as e:
+            logging.exception("Exception in SvcDoRun")
 
 if __name__ == '__main__':
     win32serviceutil.HandleCommandLine(DocumentadorService)
