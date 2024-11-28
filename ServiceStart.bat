@@ -13,6 +13,12 @@ IF %ERRORLEVEL% NEQ 0 (
 :: Get the directory of the batch script
 SET "SCRIPT_DIR=%~dp0"
 
+:: Create DocumentadorService directory if it doesn't exist
+IF NOT EXIST "C:\DocumentadorService" (
+    MKDIR "C:\DocumentadorService"
+    ECHO Created directory C:\DocumentadorService
+)
+
 ECHO Checking if Documentador Service is already installed...
 
 sc query "DocumentadorService" >nul 2>&1
